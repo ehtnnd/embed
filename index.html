@@ -50,7 +50,7 @@
     </style>
     <title>Drag & Drop or Paste YouTube URL</title>
 </head>
-	<body>
+	<body onload="isThereUrl()">
 		<div id="input-container">Drag & Drop or Paste YouTube URL</div>
 		<div id="custom-alert" class="custom-alert"></div>
 		<iframe id="my_frame" style="height: 0%; width: 0%;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
@@ -157,6 +157,15 @@
 				inputContainer.style.backgroundColor = 'rgba(0, 0, 0, 0)';
 				inputContainer.style.display = "none";
 			}
+			function isThereUrl() {
+				const urlParams = new URL(window.location).searchParams;
+				if (urlParams.has('url')) {
+					setTimeout(() => {
+						console.log(urlParams.get('url'));
+						EmbedFun(urlParams.get('url'));
+					}, 500);
+				}
+			}
 			document.addEventListener("dragenter", () => {
 				event.preventDefault()
 			});
@@ -185,14 +194,6 @@
 				if (clipboardContent) EmbedFun(clipboardContent.trim());
 				if (isYouTubeEmbed(frame)) goAlpha()
 			});
-			document.addEventListener("keypress", function(event) {
-				if (event.keyCode == 13) {
-					//if (isYouTubeEmbed(frame)) EmptyFun();
-				}
-			});
-			document.addEventListener('contextmenu', (event) => {
-				//if (isYouTubeEmbed(frame)) EmptyFun();
-			})
 			function EmptyFun() {
 				frame.src = '';
 				frame.style.height = '0%';
