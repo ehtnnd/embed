@@ -58,10 +58,6 @@
 			const inputContainer = document.getElementById("input-container");
 			const alertBox = document.getElementById('custom-alert');
 			const frame = document.getElementById("my_frame");
-			/*
-			(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})
-			*/
-			const regex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|playlist\?list=|live\/)|youtu\.be\/)[A-Za-z0-9_\-\=\&]+(&t=\d+s)?$/i;
 			function showAlert(message) {
 				alertBox.innerHTML = message;
 				alertBox.style.display = 'block';
@@ -91,7 +87,7 @@
 				if (text.match(/^(https?:\/\/)?(www\.)?google\.com\/url\?/i)) {
 					let urlObj = new URL(text);
 					let extractedUrl = urlObj.searchParams.get('url');
-					if (extractedUrl.match(regex)) EmbedFun(extractedUrl);
+					if (extractedUrl.includes("youtube.com") || extractedUrl.includes("youtu.be")) EmbedFun(extractedUrl);
 					return;
 				}
 				if (text.match(/^(https?:\/\/)?(www\.)?twitch\.tv\/videos\/\d+/i)) {
@@ -107,11 +103,6 @@
 					console.log("ChId: " + ChId);
 					let popout = 'https://player.twitch.tv/?channel=' + ChId + '&enableExtensions=true&muted=false&parent=twitch.tv&player=popout&quality=360p30&volume=0.1'
 					window.open(popout, '_blank');
-					return;
-				}
-				if (!text.match(regex)) {
-					if (text.includes("youtube.com") || text.includes("youtu.be")) showAlert("The video or playlist ID seems incorrect. Please check your link.");
-					else showAlert("Invalid YouTube URL format. Please use a valid YouTube link.");
 					return;
 				}
 				if (text.includes("youtube.com/embed/")) {
