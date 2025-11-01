@@ -105,6 +105,9 @@
 					window.open(popout, '_blank');
 					return;
 				}
+				if (text.includes("holodex.net/watch/")) {
+					text = text.replace(/holodex\.net\/watch/i, "youtu.be");
+				}
 				if (text.includes("youtube.com/embed/")) {
 					text = text.replace(/www\./i, "");
 					videoId = text.split("youtube.com/embed/")[1];
@@ -118,13 +121,13 @@
 					videoId = text.split("youtu.be/")[1];
 					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
-				if (text.includes("playlist?list=")) {
-					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube.com/embed/playlist?list=");
-					document.title = "YouTube Playlist";
-				}
 				if (text.includes("youtube.com/live/")) {
 					videoId = text.split("youtube.com/live/")[1];
 					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+				}
+				if (text.includes("playlist?list=")) {
+					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube.com/embed/playlist?list=");
+					document.title = "YouTube Playlist";
 				}
 				if (embedUrl) {
 					frame.src = embedUrl;
