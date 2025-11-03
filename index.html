@@ -43,21 +43,71 @@
 			align-items: center;
 			z-index: 1;
 		}
-
+		
+		#list {
+			color:white;
+			position: fixed;
+			top: 0%;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 2;
+			display: none;
+		}
+		
+		#next-button {
+			color:white;
+			position: fixed;
+			top: 97%;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 2;
+			padding: 2px 4px;
+			background-color: #009600;
+			margin-top: 3px;
+			border: 1px solid #00ff00;
+			display: none;
+		}
+		
+		#next-button:hover {
+			background-color: #4f04db;
+		}
+		
+		#next-button:active {
+			background-color: #ff5555;
+		}
+		
         iframe {
             border: none;
         }
+		
     </style>
     <title>Drag & Drop or Paste YouTube URL</title>
 </head>
 	<body onload="isThereUrl()">
-		<div id="input-container">Drag & Drop or Paste YouTube URL</div>
+		<div id="input-container">Drag & Drop or Paste YouTube Video URL</div>
 		<div id="custom-alert" class="custom-alert"></div>
 		<iframe id="my_frame" style="height: 0%; width: 0%;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+		<ol id="list"></ol>
+		<button id="next-button" type="button" onclick="NextVideo()">Next</button> 
 		<script>
+		
 			const inputContainer = document.getElementById("input-container");
 			const alertBox = document.getElementById('custom-alert');
 			const frame = document.getElementById("my_frame");
+			const list = document.getElementById("list");
+			const next = document.getElementById("next-button");
+			
+			function EmptyFun() {
+				const desc = 'Drag & Drop or Paste YouTube Video URL';
+				frame.src = '';
+				frame.style.height = '0%';
+				frame.style.width = '0%';
+				inputContainer.style.display = "flex";
+				inputContainer.textContent = desc;
+				inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
+				document.title = desc;
+			}
+			
 			function showAlert(message) {
 				alertBox.innerHTML = message;
 				alertBox.style.display = 'block';
@@ -65,6 +115,7 @@
 					alertBox.style.display = 'none';
 				}, 3000);
 			}
+			
 			function setTitle(videoId) {
 				const apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
 				fetch(apiUrl)
@@ -80,6 +131,7 @@
 						document.title = "Error loading video title";
 					});
 			}
+			
 			function EmbedFun(text) {
 				let videoId = "";
 				let embedUrl = "";
@@ -143,14 +195,17 @@
 				}
 				if (videoId) setTitle(videoId);
 			}
-			function isYouTubeEmbed(frame) {
+			
+			function isEmbeded(frame) {
 				const youtubeRegex = /youtube\.com\/embed\//i;
 				return youtubeRegex.test(frame.src);
 			}
+			
 			function goAlpha() {
 				inputContainer.style.backgroundColor = 'rgba(0, 0, 0, 0)';
 				inputContainer.style.display = "none";
 			}
+			
 			function isThereUrl() {
 				const urlParams = new URL(window.location).searchParams;
 				if (urlParams.has('url')) {
@@ -160,53 +215,78 @@
 					}, 500);
 				}
 			}
+			
+			function NextButtonCounter() {
+				let count = list.children.length;
+				next.textContent = "Next, " + count + " left.";
+				if (count == 0) next.style.display = "none";
+				else next.style.display = "inline";
+			}
+			
+			function NextVideo() {
+				const firstItem = list.firstElementChild;
+				EmbedFun(firstItem.textContent);
+				list.removeChild(firstItem);
+				NextButtonCounter();
+			}
+			
+			function ListStorage(a) {
+				const newlist = document.createElement('li');
+				newlist.textContent = a;
+				list.appendChild(newlist);
+				NextButtonCounter();
+			}
+			
 			document.addEventListener("dragenter", () => {
 				event.preventDefault()
 			});
+			
 			document.addEventListener("dragover", (event) => {
 				event.preventDefault();
 				inputContainer.style.backgroundColor = 'rgba(50, 0, 100, 0.8)';
 				inputContainer.style.display = "flex";
 			});
+			
 			document.addEventListener("dragleave", (event) => {
 				event.preventDefault();
 				inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
-				if (isYouTubeEmbed(frame)) goAlpha()
+				if (isEmbeded(frame)) goAlpha()
 			});
+			
 			document.addEventListener("drop", (event) => {
 				event.preventDefault();
 				const data = event.dataTransfer.getData("text");
 				console.log("drop: " + data);
+				if (isEmbeded(frame)) {
+					ListStorage(data.trim());
+					goAlpha()
+					return;
+				}
 				if (data) EmbedFun(data.trim());
-				inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
-				if (isYouTubeEmbed(frame)) goAlpha()
 			});
+			
 			document.addEventListener("paste", (event) => {
 				event.preventDefault();
 				const clipboardContent = event.clipboardData.getData("text");
 				console.log("paste: " + clipboardContent);
+				if (isEmbeded(frame)) {
+					ListStorage(clipboardContent.trim());
+					goAlpha()
+					return;
+				}
 				if (clipboardContent) EmbedFun(clipboardContent.trim());
-				if (isYouTubeEmbed(frame)) goAlpha()
 			});
-			function EmptyFun() {
-				frame.src = '';
-				frame.style.height = '0%';
-				frame.style.width = '0%';
-				inputContainer.style.display = "flex";
-				inputContainer.textContent = t;
-				inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
-				document.title = t;
-			}
-			const t = 'Drag & Drop or Paste YouTube URL';
+			
 			let holdTimeout;
 			document.addEventListener('mousedown', (event) => {
 				holdTimeout = setTimeout(() => {
-				if (isYouTubeEmbed(frame)) EmptyFun();
+				if (isEmbeded(frame)) EmptyFun();
 				}, 500);
 			});
 			document.addEventListener('mouseup', () => {
 				clearTimeout(holdTimeout);
 			});
+			
 		</script>
 	</body>
 </html>
