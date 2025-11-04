@@ -57,13 +57,14 @@
 		#next-button {
 			color:white;
 			position: fixed;
+			width: 99.9%;
 			top: 97%;
 			left: 50%;
 			transform: translateX(-50%);
 			z-index: 2;
 			padding: 2px 4px;
 			background-color: #009600;
-			margin-top: 3px;
+			margin-top: 2px;
 			border: 1px solid #00ff00;
 			display: none;
 		}
@@ -81,12 +82,12 @@
         }
 		
     </style>
-    <title>Drag & Drop or Paste YouTube URL</title>
+    <title>Drag & Drop or Paste YouTube Video URL</title>
 </head>
 	<body onload="isThereUrl()">
 		<div id="input-container">Drag & Drop or Paste YouTube Video URL</div>
 		<div id="custom-alert" class="custom-alert"></div>
-		<iframe id="my_frame" style="height: 0%; width: 0%;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+		<iframe id="my_frame" style="height: 0%; width: 0%;" src="" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 		<ol id="list"></ol>
 		<button id="next-button" type="button" onclick="NextVideo()">Next</button> 
 		<script>
@@ -98,22 +99,20 @@
 			const next = document.getElementById("next-button");
 			
 			function EmptyFun() {
-				const desc = 'Drag & Drop or Paste YouTube Video URL';
 				frame.src = '';
 				frame.style.height = '0%';
 				frame.style.width = '0%';
 				inputContainer.style.display = "flex";
-				inputContainer.textContent = desc;
 				inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
-				document.title = desc;
+				document.title = 'Drag & Drop or Paste YouTube Video URL';
 			}
 			
-			function showAlert(message) {
+			function showAlert(message, time) {
 				alertBox.innerHTML = message;
 				alertBox.style.display = 'block';
 				setTimeout(() => {
 					alertBox.style.display = 'none';
-				}, 3000);
+				}, time);
 			}
 			
 			function setTitle(videoId) {
@@ -133,76 +132,86 @@
 			}
 			
 			function EmbedFun(text) {
+			
 				let videoId = "";
 				let embedUrl = "";
+				
 				alertBox.style.display = 'none';
+				
 				if (text.match(/^(https?:\/\/)?(www\.)?google\.com\/url\?/i)) {
 					let urlObj = new URL(text);
 					let extractedUrl = urlObj.searchParams.get('url');
 					if (extractedUrl.includes("youtube.com") || extractedUrl.includes("youtu.be")) EmbedFun(extractedUrl);
 					return;
 				}
+				
 				if (text.match(/^(https?:\/\/)?(www\.)?twitch\.tv\/videos\/\d+/i)) {
 					let vidId = text.replace(/^(https?:\/\/)?(www\.)?twitch\.tv\/videos\//i, "");
 					vidId = vidId.replace(/\?filter=archives\&sort\=time/i, "");
-					console.log("vidId: " + vidId);
+					//console.log("vidId: " + vidId);
 					let popout = 'https://player.twitch.tv/?enableExtensions=true&parent=twitch.tv&player=popout&quality=720p&video=' + vidId;
 					window.open(popout, '_blank');
 					return;
 				}
+				
 				if (text.match(/^(https?:\/\/)?(www\.)?twitch\.tv\/\w+$/i)) {
 					let ChId = text.replace(/^(https?:\/\/)?(www\.)?twitch\.tv\//i, "");;
-					console.log("ChId: " + ChId);
+					//console.log("ChId: " + ChId);
 					let popout = 'https://player.twitch.tv/?channel=' + ChId + '&enableExtensions=true&muted=false&parent=twitch.tv&player=popout&quality=360p30&volume=0.1'
 					window.open(popout, '_blank');
 					return;
 				}
+				
 				if (text.includes("holodex.net/watch/")) {
 					text = text.replace(/holodex\.net\/watch/i, "youtu.be");
 				}
+				
 				if (text.includes("youtube.com/embed/")) {
 					text = text.replace(/www\./i, "");
 					videoId = text.split("youtube.com/embed/")[1];
 					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
+				
 				if (text.includes("watch?v=")) {
 					videoId = text.split("v=")[1].split("&")[0];
 					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
+				
 				if (text.includes("youtu.be/")) {
 					videoId = text.split("youtu.be/")[1];
 					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
+				
 				if (text.includes("youtube.com/live/")) {
 					videoId = text.split("youtube.com/live/")[1];
 					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
+				
 				if (text.includes("playlist?list=")) {
 					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube.com/embed/playlist?list=");
 					document.title = "YouTube Playlist";
 				}
+				
 				if (embedUrl) {
 					frame.src = embedUrl;
 					frame.style.height = '95%';
 					frame.style.width = '95%';
 					goAlpha();
-					inputContainer.style.display = "none";
-					inputContainer.textContent = '';
 				} else {
-					showAlert("Could not embed the video. Please check the link.");
-					console.log("Error: " + embedUrl);
-					console.log("Id: " + videoId);
+					showAlert("Could not embed the video. Please check the link.", 3000);
+					//console.log("Error: " + embedUrl + "Id: " + videoId);
+					inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
 				}
+				
 				if (videoId) setTitle(videoId);
 			}
 			
-			function isEmbeded(frame) {
+			function isEmbeded() {
 				const youtubeRegex = /youtube\.com\/embed\//i;
 				return youtubeRegex.test(frame.src);
 			}
 			
 			function goAlpha() {
-				inputContainer.style.backgroundColor = 'rgba(0, 0, 0, 0)';
 				inputContainer.style.display = "none";
 			}
 			
@@ -210,7 +219,7 @@
 				const urlParams = new URL(window.location).searchParams;
 				if (urlParams.has('url')) {
 					setTimeout(() => {
-						console.log(urlParams.get('url'));
+						//console.log(urlParams.get('url'));
 						EmbedFun(urlParams.get('url'));
 					}, 500);
 				}
@@ -218,9 +227,11 @@
 			
 			function NextButtonCounter() {
 				let count = list.children.length;
-				next.textContent = "Next, " + count + " left.";
 				if (count == 0) next.style.display = "none";
-				else next.style.display = "inline";
+				else {
+					next.textContent = "Next, " + count + " left.";
+					next.style.display = "inline";
+				}
 			}
 			
 			function NextVideo() {
@@ -235,6 +246,18 @@
 				newlist.textContent = a;
 				list.appendChild(newlist);
 				NextButtonCounter();
+				showAlert("Add " + a, 1500);
+			}
+			
+			function StepOne(one) {
+				let data = one.trim();
+				//console.log("Step One: " + data);
+				if (isEmbeded()) {
+					ListStorage(data);
+					goAlpha()
+					return;
+				}
+				EmbedFun(data);
 			}
 			
 			document.addEventListener("dragenter", () => {
@@ -250,39 +273,29 @@
 			document.addEventListener("dragleave", (event) => {
 				event.preventDefault();
 				inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
-				if (isEmbeded(frame)) goAlpha()
+				if (isEmbeded()) goAlpha()
 			});
 			
 			document.addEventListener("drop", (event) => {
 				event.preventDefault();
 				const data = event.dataTransfer.getData("text");
-				console.log("drop: " + data);
-				if (isEmbeded(frame)) {
-					ListStorage(data.trim());
-					goAlpha()
-					return;
-				}
-				if (data) EmbedFun(data.trim());
+				StepOne(data);
 			});
 			
 			document.addEventListener("paste", (event) => {
 				event.preventDefault();
 				const clipboardContent = event.clipboardData.getData("text");
-				console.log("paste: " + clipboardContent);
-				if (isEmbeded(frame)) {
-					ListStorage(clipboardContent.trim());
-					goAlpha()
-					return;
-				}
-				if (clipboardContent) EmbedFun(clipboardContent.trim());
+				StepOne(clipboardContent);
 			});
 			
 			let holdTimeout;
+			
 			document.addEventListener('mousedown', (event) => {
 				holdTimeout = setTimeout(() => {
-				if (isEmbeded(frame)) EmptyFun();
+				if (isEmbeded()) EmptyFun();
 				}, 500);
 			});
+			
 			document.addEventListener('mouseup', () => {
 				clearTimeout(holdTimeout);
 			});
