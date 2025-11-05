@@ -148,7 +148,6 @@
 				if (text.match(/^(https?:\/\/)?(www\.)?twitch\.tv\/videos\/\d+/i)) {
 					let vidId = text.replace(/^(https?:\/\/)?(www\.)?twitch\.tv\/videos\//i, "");
 					vidId = vidId.replace(/\?filter=archives\&sort\=time/i, "");
-					//console.log("vidId: " + vidId);
 					let popout = 'https://player.twitch.tv/?enableExtensions=true&parent=twitch.tv&player=popout&quality=720p&video=' + vidId;
 					window.open(popout, '_blank');
 					return;
@@ -156,7 +155,6 @@
 				
 				if (text.match(/^(https?:\/\/)?(www\.)?twitch\.tv\/\w+$/i)) {
 					let ChId = text.replace(/^(https?:\/\/)?(www\.)?twitch\.tv\//i, "");;
-					//console.log("ChId: " + ChId);
 					let popout = 'https://player.twitch.tv/?channel=' + ChId + '&enableExtensions=true&muted=false&parent=twitch.tv&player=popout&quality=360p30&volume=0.1'
 					window.open(popout, '_blank');
 					return;
@@ -199,7 +197,7 @@
 					goAlpha();
 				} else {
 					showAlert("Could not embed the video. Please check the link.", 3000);
-					//console.log("Error: " + embedUrl + "Id: " + videoId);
+					console.log("embedUrl: " + embedUrl + " videoId: " + videoId);
 					inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
 				}
 				
@@ -219,7 +217,6 @@
 				const urlParams = new URL(window.location).searchParams;
 				if (urlParams.has('url')) {
 					setTimeout(() => {
-						//console.log(urlParams.get('url'));
 						EmbedFun(urlParams.get('url'));
 					}, 500);
 				}
@@ -251,12 +248,11 @@
 			
 			function StepOne(one) {
 				let data = one.trim();
-				//console.log("Step One: " + data);
-				if (isEmbeded()) {
-					ListStorage(data);
-					goAlpha()
-					return;
-				}
+				//if (isEmbeded()) {
+				//	ListStorage(data);
+				//	goAlpha()
+				//	return;
+				//}
 				EmbedFun(data);
 			}
 			
