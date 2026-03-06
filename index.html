@@ -11,13 +11,13 @@
             align-items: center;
 			width: 100vw;
             height: 100vh;
-            background-color: #262626;
+            background-color: #151515;
         }
 
         .custom-alert {
             display: none;
             position: fixed;
-            top: 50%;
+            top: 35%;
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: #210000;
@@ -26,26 +26,11 @@
             z-index: 100;
             border-radius: 5px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-			transition: opacity 0.3s ease;
+			font-size: 17px;
         }
-
-		#input-container {
-			color:white;
-			position: fixed;
-			top: 0%;
-			left: 50%;
-			transform: translateX(-50%);
-			width: 100vw;
-			height: 100vh;
-			background-color: rgba(0, 0, 50, 0.8);
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			z-index: 1;
-		}
 		
 		#list {
-			color:white;
+			color: white;
 			position: fixed;
 			top: 0%;
 			left: 50%;
@@ -81,29 +66,42 @@
             border: none;
         }
 		
+		#inputbox {
+			color: white;
+			position: fixed;
+			top: 40%;
+			background-color: rgba(0, 100, 150, 1);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 100;
+			border-radius: 8px;
+			font-size: 18px;
+		}
+		
     </style>
     <title>Drag & Drop or Paste YouTube Video URL</title>
 </head>
 	<body onload="isThereUrl()">
-		<div id="input-container">Drag & Drop or Paste YouTube Video URL</div>
+	
+		<input style="width:25%; height: 5%;" placeholder=" Drag & Drop or Paste YouTube Video URL" id="inputbox" type="text"/>
 		<div id="custom-alert" class="custom-alert"></div>
 		<iframe id="my_frame" style="height: 0%; width: 0%;" src="" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 		<ol id="list"></ol>
 		<button id="next-button" type="button" onclick="NextVideo()">Next</button> 
 		<script>
 		
-			const inputContainer = document.getElementById("input-container");
 			const alertBox = document.getElementById('custom-alert');
 			const frame = document.getElementById("my_frame");
 			const list = document.getElementById("list");
 			const next = document.getElementById("next-button");
+			const inputbox = document.getElementById("inputbox");
 			
 			function EmptyFun() {
 				frame.src = '';
 				frame.style.height = '0%';
 				frame.style.width = '0%';
-				inputContainer.style.display = "flex";
-				inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
+				inputbox.style.display = "flex";
 				document.title = 'Drag & Drop or Paste YouTube Video URL';
 			}
 			
@@ -135,7 +133,6 @@
 			
 				let videoId = "";
 				let embedUrl = "";
-				
 				alertBox.style.display = 'none';
 				
 				if (text.match(/^(https?:\/\/)?(www\.)?google\.com\/url\?/i)) {
@@ -194,11 +191,10 @@
 					frame.src = embedUrl;
 					frame.style.height = '95%';
 					frame.style.width = '95%';
-					goAlpha();
+					inputbox.style.display = 'none';
 				} else {
 					showAlert("Could not embed the video. Please check the link.", 3000);
-					console.log("embedUrl: " + embedUrl + " videoId: " + videoId);
-					inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
+					console.log("ERROR REPORT\nembedUrl: " + embedUrl + "\nvideoId: " + videoId + "\ntext: " + text);
 				}
 				
 				if (videoId) setTitle(videoId);
@@ -209,22 +205,19 @@
 				return youtubeRegex.test(frame.src);
 			}
 			
-			function goAlpha() {
-				inputContainer.style.display = "none";
-			}
-			
 			function isThereUrl() {
-				const urlParams = new URL(window.location).searchParams;
+				const url = new URL(window.location);
+				const urlParams = url.searchParams;
 				if (urlParams.has('url')) {
 					setTimeout(() => {
 						EmbedFun(urlParams.get('url'));
-					}, 500);
+					}, 1000);
 				}
 			}
 			
 			function NextButtonCounter() {
 				let count = list.children.length;
-				if (count == 0) next.style.display = "none";
+				if (count <= 0) next.style.display = "none";
 				else {
 					next.textContent = "Next, " + count + " left.";
 					next.style.display = "inline";
@@ -250,10 +243,10 @@
 				let data = one.trim();
 				//if (isEmbeded()) {
 				//	ListStorage(data);
-				//	goAlpha()
 				//	return;
 				//}
 				EmbedFun(data);
+				inputbox.style.backgroundColor = 'rgba(0, 100, 150, 1)';
 			}
 			
 			document.addEventListener("dragenter", () => {
@@ -262,14 +255,12 @@
 			
 			document.addEventListener("dragover", (event) => {
 				event.preventDefault();
-				inputContainer.style.backgroundColor = 'rgba(50, 0, 100, 0.8)';
-				inputContainer.style.display = "flex";
+				inputbox.style.backgroundColor = 'rgba(100, 0, 200, 1)';
 			});
 			
 			document.addEventListener("dragleave", (event) => {
 				event.preventDefault();
-				inputContainer.style.backgroundColor = 'rgba(0, 0, 50, 0.8)';
-				if (isEmbeded()) goAlpha()
+				inputbox.style.backgroundColor = 'rgba(0, 100, 150, 1)';
 			});
 			
 			document.addEventListener("drop", (event) => {
