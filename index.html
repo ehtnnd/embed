@@ -84,8 +84,8 @@
 				frame.src = '';
 				frame.style.height = '0%';
 				frame.style.width = '0%';
-				inputbox.style.display = "flex";
-				inputContainer.style.display = "flex";
+				inputbox.style.display = 'flex';
+				inputContainer.style.display = 'flex';
 				document.title = 'Drag & Drop or Paste YouTube Video URL';
 			}
 			
@@ -98,7 +98,7 @@
 			}
 			
 			function setTitle(videoId) {
-				const apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+				let apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
 				fetch(apiUrl)
 					.then((response) => {
 						if (!response.ok) throw new Error("Failed to fetch video info.");
@@ -168,7 +168,20 @@
 				
 				if (text.includes("playlist?list=")) {
 					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube.com/embed/playlist?list=");
-					document.title = "YouTube Playlist";
+					let playlistID = text.replace(/(https?:\/\/)?(www\.)?youtube\.com\/playlist\?list=/i, "");
+					apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/playlist?list=${playlistID}&format=json`;
+					fetch(apiUrl)
+					.then((response) => {
+						if (!response.ok) throw new Error("Failed to fetch video info.");
+						return response.json();
+					})
+					.then((data) => {
+						document.title = data.title || "YouTube Video";
+					})
+					.catch((error) => {
+						console.error("Error fetching video title:", error);
+						document.title = "Error loading video title";
+					});
 				}
 				
 				if (embedUrl) {
@@ -177,6 +190,7 @@
 					frame.style.width = '95%';
 					inputbox.style.display = 'none';
 					inputContainer.style.display = 'none';
+					
 				} else {
 					showAlert("Could not embed the video. Please check the link.", 3000);
 					console.log("ERROR REPORT\nembedUrl: " + embedUrl + "\nvideoId: " + videoId + "\ntext: " + text);
