@@ -167,7 +167,7 @@
 				}
 				
 				if (text.includes("playlist?list=")) {
-					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube.com/embed/playlist?list=");
+					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube-nocookie.com/embed/playlist?list=");
 					let u = new URL(text);
 					let playlistID = u.searchParams.get("list");
 					apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/playlist?list=${playlistID}&format=json`;
