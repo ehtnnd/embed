@@ -76,6 +76,8 @@
 			const alertBox = document.getElementById("custom-alert");
 			const frame = document.getElementById("my_frame");
 			const inputbox = document.getElementById("inputbox");
+			const url = new URL(window.location);
+			const urlParams = url.searchParams;
 			
 			function Reset() {
 				frame.src = '';
@@ -83,7 +85,6 @@
 				frame.style.width = '0%';
 				inputbox.style.display = 'flex';
 				inputContainer.style.display = 'flex';
-				document.title = 'Drag & Drop or Paste YouTube Video URL';
 			}
 			
 			function showAlert(message, time) {
@@ -145,39 +146,39 @@
 				if (text.includes("youtube.com/embed/")) {
 					text = text.replace(/www\./i, "");
 					videoId = text.split("youtube.com/embed/")[1];
-					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("watch?v=")) {
 					videoId = text.split("v=")[1].split("&")[0];
-					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("youtu.be/")) {
 					videoId = text.split("youtu.be/")[1];
-					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("youtube.com/live/")) {
 					videoId = text.split("youtube.com/live/")[1];
-					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("playlist?list=")) {
-					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube-nocookie.com/embed/playlist?list=");
-					let playlistID = text.replace(/(https?:\/\/)?(www\.)?youtube\.com\/playlist\?list=/i, "");
+					embedUrl = text.replace(/(www\.)?youtube(-nocookie)?\.com\/playlist\?list=/i, "www.youtube.com/embed/playlist?list=");
+					let playlistID = text.replace(/(https?:\/\/)?(www\.)?youtube(-nocookie)?\.com\/playlist\?list=/i, "");
 					apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/playlist?list=${playlistID}&format=json`;
 					fetch(apiUrl)
-					.then((response) => {
-						if (!response.ok) throw new Error("Failed to fetch video info.");
-						return response.json();
-					})
-					.then((data) => {
-						document.title = data.title || "YouTube Video";
-					})
-					.catch((error) => {
-						console.error("Error fetching video title:", error);
-						document.title = "Error loading video title";
+						.then((response) => {
+							if (!response.ok) throw new Error("Failed to fetch video info.");
+							return response.json();
+						})
+						.then((data) => {
+							document.title = data.title || "YouTube Video";
+						})
+						.catch((error) => {
+							console.error("Error fetching video title:", error);
+							document.title = "Error loading video title";
 					});
 				}
 				
@@ -187,7 +188,8 @@
 					frame.style.width = '95%';
 					inputbox.style.display = 'none';
 					inputContainer.style.display = 'none';
-					window.history.pushState({}, "", window.location + "?url=" + embedUrl);
+					urlParams.delete("url");
+					window.history.pushState({}, "", url + "?url=" + embedUrl);
 				} else {
 					showAlert("Could not embed the video. Please check the link.", 3000);
 					console.log("ERROR REPORT\nembedUrl: " + embedUrl + "\nvideoId: " + videoId + "\ntext: " + text);
@@ -196,9 +198,12 @@
 				if (videoId) setTitle(videoId);
 			}
 			
+			function isEmbeded() {
+				const youtubeRegex = /youtube\.com\/embed\//i;
+				return youtubeRegex.test(frame.src);
+			}
+			
 			function isThereUrl() {
-				const url = new URL(window.location);
-				const urlParams = url.searchParams;
 				if (urlParams.has('url')) {
 					setTimeout(() => {
 						EmbedFun(urlParams.get('url'));
