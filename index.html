@@ -146,26 +146,26 @@
 				if (text.includes("youtube.com/embed/")) {
 					text = text.replace(/www\./i, "");
 					videoId = text.split("youtube.com/embed/")[1];
-					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("watch?v=")) {
 					videoId = text.split("v=")[1].split("&")[0];
-					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("youtu.be/")) {
 					videoId = text.split("youtu.be/")[1];
-					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("youtube.com/live/")) {
 					videoId = text.split("youtube.com/live/")[1];
-					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("playlist?list=")) {
-					embedUrl = text.replace(/(www\.)?youtube(-nocookie)?\.com\/playlist\?list=/i, "www.youtube.com/embed/playlist?list=");
+					embedUrl = text.replace(/(www\.)?youtube(-nocookie)?\.com\/playlist\?list=/i, "www.youtube-nocookie.com/embed/playlist?list=");
 					let playlistID = text.replace(/(https?:\/\/)?(www\.)?youtube(-nocookie)?\.com\/playlist\?list=/i, "");
 					apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/playlist?list=${playlistID}&format=json`;
 					fetch(apiUrl)
