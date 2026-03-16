@@ -187,17 +187,13 @@
 					frame.style.width = '95%';
 					inputbox.style.display = 'none';
 					inputContainer.style.display = 'none';
+					window.history.pushState({}, "", window.location + "?url=" + embedUrl);
 				} else {
 					showAlert("Could not embed the video. Please check the link.", 3000);
 					console.log("ERROR REPORT\nembedUrl: " + embedUrl + "\nvideoId: " + videoId + "\ntext: " + text);
 				}
 				
 				if (videoId) setTitle(videoId);
-			}
-			
-			function isEmbeded() {
-				const youtubeRegex = /youtube-nocookie\.com\/embed\//i;
-				return youtubeRegex.test(frame.src);
 			}
 			
 			function isThereUrl() {
@@ -245,9 +241,7 @@
 			let holdTimeout;
 			
 			document.addEventListener('mousedown', (event) => {
-				holdTimeout = setTimeout(() => {
-				if (isEmbeded()) Reset();
-				}, 500);
+				holdTimeout = setTimeout(() => { Reset(); }, 500);
 			});
 			
 			document.addEventListener('mouseup', () => {
