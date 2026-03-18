@@ -95,8 +95,13 @@
 				}, time);
 			}
 			
-			function setTitle(videoId) {
-				const apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+			function setTitle(Id) {
+				let apiUrl = "";
+				if (Id.length >= 10 && Id.length <= 13) {
+					apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${Id}&format=json`;
+				} else {
+					apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/playlist?list=${Id}&format=json`;
+				}
 				fetch(apiUrl)
 					.then((response) => {
 						if (!response.ok) throw new Error("Failed to fetch video info.");
@@ -108,19 +113,19 @@
 					.catch((error) => {
 						console.error("Error fetching video title:", error);
 						document.title = "Error loading video title";
-					});
+				});
 			}
 			
 			function EmbedFun(text) {
 			
 				let videoId = "";
 				let embedUrl = "";
+				let urlObj = new URL(text);
 				alertBox.style.display = 'none';
 				
 				text = text.replace(/-nocookie/i, "");
 				
 				if (text.match(/^(https?:\/\/)?(www\.)?google\.com\/url\?/i)) {
-					let urlObj = new URL(text);
 					let extractedUrl = urlObj.searchParams.get('url');
 					if (extractedUrl.includes("youtube.com") || extractedUrl.includes("youtu.be")) EmbedFun(extractedUrl);
 					return;
@@ -168,21 +173,7 @@
 				
 				if (text.includes("playlist?list=")) {
 					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube-nocookie.com/embed/playlist?list=");
-					let u = new URL(text);
-					let playlistID = u.searchParams.get("list");
-					apiUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/playlist?list=${playlistID}&format=json`;
-					fetch(apiUrl)
-						.then((response) => {
-							if (!response.ok) throw new Error("Failed to fetch video info.");
-							return response.json();
-						})
-						.then((data) => {
-							document.title = data.title || "YouTube Video";
-						})
-						.catch((error) => {
-							console.error("Error fetching video title:", error);
-							document.title = "Error loading video title";
-					});
+					videoId = urlObj.searchParams.get("list");
 				}
 				
 				if (embedUrl) {
