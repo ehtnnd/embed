@@ -30,7 +30,27 @@
 			font-size: 1.2vw;
         }
 		
+		@keyframes animOut {
+            from {
+                top: 40%;
+            }
+            to {
+                top: -10%;
+            }
+        }
+		
+		@keyframes animIn {
+            from {
+                top: -10%;
+            }
+            to {
+				top: 40%;
+            }
+        }
+		
 		#inputbox {
+			width: 30%;
+			height: 5%;
 			color: white;
 			position: fixed;
 			top: 40%;
@@ -66,7 +86,7 @@
 </head>
 	<body onload="isThereUrl()">
 	
-		<input style="width: 25%; height: 5%;" placeholder=" Drag & Drop or Paste YouTube Video URL" id="inputbox" type="text"/>
+		<input style="" placeholder=" Drag & Drop or Paste YouTube Video URL" id="inputbox" type="text"/>
 		<div id="input-container"></div>
 		<div id="custom-alert" class="custom-alert"></div>
 		<iframe id="my_frame" style="height: 0%; width: 0%;" src="" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
@@ -81,9 +101,11 @@
 			
 			function Reset() {
 				frame.src = '';
-				frame.style.height = '0%';
 				frame.style.width = '0%';
-				inputbox.style.display = 'flex';
+				frame.style.height = '0%';
+				inputbox.value = '';
+				inputbox.style.top = '40%';
+				inputbox.style.animation = 'animIn 1s';
 				inputContainer.style.display = 'flex';
 			}
 			
@@ -180,10 +202,11 @@
 					frame.src = embedUrl;
 					frame.style.height = '95%';
 					frame.style.width = '95%';
-					inputbox.style.display = 'none';
-					inputContainer.style.display = 'none';
 					urlParams.delete("url");
 					window.history.pushState({}, "", url + "?url=" + text);
+					inputContainer.style.display = 'none';
+					inputbox.style.top = '-10%';
+					inputbox.style.animation = 'animOut 3s';
 				} else {
 					showAlert("Could not embed the video. Please check the link.", 3000);
 					console.log("ERROR REPORT\nembedUrl: " + embedUrl + "\nvideoId: " + videoId + "\ntext: " + text);
@@ -205,6 +228,10 @@
 				EmbedFun(data);
 				inputContainer.style.display = 'none';
 			}
+			
+			inputbox.addEventListener("keydown", (e) => {
+			if (e.code == "Enter" || e.code == "NumpadEnter") StepOne(inputbox.value);
+			});
 			
 			document.addEventListener("dragenter", () => {
 				event.preventDefault()
@@ -235,7 +262,9 @@
 			let holdTimeout;
 			
 			document.addEventListener('mousedown', (event) => {
-				holdTimeout = setTimeout(() => { Reset(); }, 500);
+				holdTimeout = setTimeout(() => {
+					if (/youtube-nocookie\.com\/embed/i.test(frame.src)) Reset();
+				}, 500);
 			});
 			
 			document.addEventListener('mouseup', () => {
