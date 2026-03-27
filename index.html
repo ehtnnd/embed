@@ -141,6 +141,8 @@
 			}
 			
 			function EmbedFun(text) {
+				
+				if (!/https?:\/\//i.test(text)) text = "https://" + text;
 			
 				let videoId = "";
 				let embedUrl = "";
