@@ -35,16 +35,25 @@
                 top: 40%;
             }
             to {
-                top: -10%;
+                top: -7%;
             }
         }
 		
 		@keyframes animIn {
             from {
-                top: -10%;
+                top: -7%;
             }
             to {
 				top: 40%;
+            }
+        }
+		
+		@keyframes animFadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+				opacity: 0;
             }
         }
 		
@@ -103,12 +112,18 @@
 			const urlParams = url.searchParams;
 			
 			function Reset() {
-				frame.src = '';
-				frame.style.width = '0%';
-				frame.style.height = '0%';
 				inputbox.value = '';
 				inputbox.style.top = '40%';
-				inputbox.style.animation = 'animIn 1s';
+				inputbox.style.animation = 'animIn 3s';
+				frame.style.animation = 'animFadeOut 3s linear';
+				frame.style.opacity = '0';
+				setTimeout(() => {
+					frame.src = '';
+					frame.style.width = '0%';
+					frame.style.height = '0%';
+					frame.style.opacity = '1';
+					frame.style.animation = '';
+				}, 3000);
 			}
 			
 			function showAlert(message, time) {
@@ -204,8 +219,8 @@
 				
 				if (embedUrl) {
 					frame.src = embedUrl;
-					frame.style.height = '95%';
-					frame.style.width = '95%';
+					frame.style.height = '90%';
+					frame.style.width = '90%';
 					urlParams.delete("url");
 					window.history.pushState({}, "", url + "?url=" + text);
 					inputContainer.style.display = 'none';
