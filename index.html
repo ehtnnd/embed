@@ -93,11 +93,33 @@
 			display: none;
 		}
 		
+		#reset-button {
+			top: 50%;
+			left: 96%; 
+			position: fixed;
+			height: 50px;
+			width: 50px;
+			background-color: rgba(0, 100, 255, 1);
+			padding: 5px;
+			border-radius: 50%;
+			border: 2px solid cyan;
+			opacity: .2;
+			transition: all .3s linear;
+			display: none;
+		}
+		
+		#reset-button:hover {
+			border: 2px solid cyan;
+			opacity: 1;
+			transform: rotate(-180deg);
+		}
+		
     </style>
     <title>Drag & Drop or Paste YouTube Video URL</title>
 </head>
 	<body onload="isThereUrl()">
 	
+		<img id="reset-button" src="reset.png" alt="Reset">
 		<input style="" placeholder=" Drag & Drop or Paste YouTube Video URL" id="inputbox" type="text"/>
 		<div id="input-container"></div>
 		<div id="custom-alert" class="custom-alert"></div>
@@ -108,15 +130,20 @@
 			const alertBox = document.getElementById("custom-alert");
 			const frame = document.getElementById("my_frame");
 			const inputbox = document.getElementById("inputbox");
+			const resetbutton = document.getElementById("reset-button");
 			const url = new URL(window.location);
 			const urlParams = url.searchParams;
 			
 			function Reset() {
+			
+				if (!/youtube(-nocookie)?\.com\/embed/i.test(frame.src)) return;
+				
 				inputbox.value = '';
 				inputbox.style.top = '40%';
 				inputbox.style.animation = 'animIn 3s';
 				frame.style.animation = 'animFadeOut 3s linear';
 				frame.style.opacity = '0';
+				resetbutton.style.display = 'none';
 				setTimeout(() => {
 					frame.src = '';
 					frame.style.width = '0%';
@@ -159,9 +186,17 @@
 				
 				if (!/https?:\/\//i.test(text)) text = "https://" + text;
 			
+				let urlObj;
+				try {
+					urlObj = new URL(text);
+				} catch (error) {
+					showAlert("Could not embed the video. Please check the link.", 3000);
+					console.log('Embed error:', { text });
+					return;
+				}
+			
 				let videoId = "";
 				let embedUrl = "";
-				let urlObj = new URL(text);
 				alertBox.style.display = 'none';
 				
 				text = text.replace(/-nocookie/i, "");
@@ -224,6 +259,7 @@
 					urlParams.delete("url");
 					window.history.pushState({}, "", url + "?url=" + text);
 					inputContainer.style.display = 'none';
+					resetbutton.style.display = 'flex';
 					inputbox.style.top = '-10%';
 					inputbox.style.animation = 'animOut 3s';
 				} else {
@@ -278,11 +314,13 @@
 				StepOne(clipboardContent);
 			});
 			
+			resetbutton.onclick = Reset;
+			
 			let holdTimeout;
 			
 			document.addEventListener('mousedown', (event) => {
 				holdTimeout = setTimeout(() => {
-					if (/youtube-nocookie\.com\/embed/i.test(frame.src)) Reset();
+					Reset();
 				}, 500);
 			});
 			
