@@ -94,24 +94,27 @@
 		}
 		
 		#reset-button {
-			top: 50%;
-			left: 96%; 
+			top: 0%;
+			right: 0%; 
 			position: fixed;
-			height: 50px;
-			width: 50px;
+			width: 3%;
+			aspect-ratio: 1/1;
 			background-color: rgba(0, 100, 255, 1);
 			padding: 5px;
 			border-radius: 50%;
 			border: 2px solid cyan;
 			opacity: .2;
-			transition: all .3s linear;
+			transition: opacity .2s linear;
 			display: none;
 		}
 		
 		#reset-button:hover {
-			border: 2px solid cyan;
 			opacity: 1;
-			transform: rotate(-180deg);
+		}
+		
+		#reset-button:active {
+			background-color: rgba(100, 0, 0, 1);
+			border: 2px solid red;
 		}
 		
     </style>
