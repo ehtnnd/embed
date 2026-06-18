@@ -197,8 +197,6 @@
 				let embedUrl = "";
 				alertBox.style.display = 'none';
 				
-				text = text.replace(/-nocookie/i, "");
-				
 				if (text.match(/^(https?:\/\/)?(www\.)?google\.com\/url\?/i)) {
 					let extractedUrl = urlObj.searchParams.get('url');
 					if (extractedUrl.includes("youtube.com") || extractedUrl.includes("youtu.be")) EmbedFun(extractedUrl);
@@ -227,26 +225,26 @@
 				if (text.includes("youtube.com/embed/")) {
 					text = text.replace(/www\./i, "");
 					videoId = text.split("youtube.com/embed/")[1];
-					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("watch?v=")) {
 					videoId = text.split("v=")[1].split("&")[0];
-					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("youtu.be/")) {
 					videoId = text.split("youtu.be/")[1];
-					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("youtube.com/live/")) {
 					videoId = text.split("youtube.com/live/")[1];
-					embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1`;
+					embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 				}
 				
 				if (text.includes("playlist?list=")) {
-					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube-nocookie.com/embed/playlist?list=");
+					embedUrl = text.replace(/(www\.)?youtube\.com\/playlist\?list=/i, "www.youtube.com/embed/playlist?list=");
 					videoId = urlObj.searchParams.get("list");
 				}
 				
